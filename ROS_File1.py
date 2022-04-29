@@ -15,42 +15,38 @@ import os
 class Quadrotor():
     def __init__(self):
         # publisher for rotor speeds
-        self.motor_speed_pub = rospy.Publisher("/crazyflie2/command/
-        motor_speed", Actuators, queue_size=10)
-# subscribe to Odometry topic
-    self.odom_sub = rospy.Subscriber("/crazyflie2/ground_truth/odometry",
-        Odometry, self.odom_callback)
-    self.t0 = None
-    self.t = None
-    self.t_series = []
-    self.x_series = []
-    self.y_series = []
-    self.z_series = []
-    self.mutex_lock_on = False
-    rospy.on_shutdown(self.save_data)
-    # TODO: include initialization codes if needed
+        self.motor_speed_pub = rospy.Publisher("/crazyflie2/command/motor_speed", Actuators, queue_size=10)
+        # subscribe to Odometry topic
+        self.odom_sub = rospy.Subscriber("/crazyflie2/ground_truth/odometry",Odometry, self.odom_callback)
+        self.t0 = None
+        self.t = None
+        self.t_series = []
+        self.x_series = []
+        self.y_series = []
+        self.z_series = []
+        self.mutex_lock_on = False
+        rospy.on_shutdown(self.save_data)
+        # TODO: include initialization codes if needed
 
     def traj_evaluate(self):
-        # TODO: evaluating the corresponding trajectories designed in Part 1
-        to return the desired positions, velocities and accelerations
-    
+        # TODO: evaluating the corresponding trajectories designed in Part 1 
+        # to return the desired positions, velocities and accelerations
+        pass
     def smc_control(self, xyz, xyz_dot, rpy, rpy_dot):
         # obtain the desired values by evaluating the corresponding
-        trajectories
+        # trajectories
         self.traj_evaluate()
-        Page 6
-        RBE 502 — Robot Control Final Project
         # TODO: implement the Sliding Mode Control laws designed in Part 2 to
-        calculate the control inputs "u"
+        # calculate the control inputs "u"
+        
         # REMARK: wrap the roll-pitch-yaw angle errors to [-pi to pi]
         # TODO: convert the desired control inputs "u" to desired rotor
-        velocities "motor_vel" by using the "allocation matrix"
+        # velocities "motor_vel" by using the "allocation matrix"
         # TODO: maintain the rotor velocities within the valid range of [0 to
-        2618]
+        # 2618]
         # publish the motor velocities to the associated ROS topic
         motor_speed = Actuators()
-        motor_speed.angular_velocities = [motor_vel[0,0], motor_vel[1,0],
-        motor_vel[2,0], motor_vel[3,0]]
+        motor_speed.angular_velocities = [motor_vel[0,0], motor_vel[1,0], motor_vel[2,0], motor_vel[3,0]]
         self.motor_speed_pub.publish(motor_speed)
 
     # odometry callback function (DO NOT MODIFY)
@@ -60,12 +56,9 @@ class Quadrotor():
         self.t = msg.header.stamp.to_sec() - self.t0
 
         # convert odometry data to xyz, xyz_dot, rpy, and rpy_dot
-        w_b = np.asarray([[msg.twist.twist.angular.x], [msg.twist.twist.
-        angular.y], [msg.twist.twist.angular.z]])
-        v_b = np.asarray([[msg.twist.twist.linear.x], [msg.twist.twist.linear.
-        y], [msg.twist.twist.linear.z]])
-        xyz = np.asarray([[msg.pose.pose.position.x], [msg.pose.pose.position.
-        y], [msg.pose.pose.position.z]])
+        w_b = np.asarray([[msg.twist.twist.angular.x], [msg.twist.twist.angular.y], [msg.twist.twist.angular.z]])
+        v_b = np.asarray([[msg.twist.twist.linear.x], [msg.twist.twist.linear.y], [msg.twist.twist.linear.z]])
+        xyz = np.asarray([[msg.pose.pose.position.x], [msg.pose.pose.position.y], [msg.pose.pose.position.z]])
         q = msg.pose.pose.orientation
         T = tf.transformations.quaternion_matrix([q.x, q.y, q.z, q.w])
         T[0:3, 3] = xyz[0:3, 0]
