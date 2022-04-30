@@ -138,7 +138,7 @@ tspan = [[0, 5], [5, 20], [20, 35], [35, 50], [50, 65]]
 for i in range(len(points)-1):
     traj_obj = QuinticTraj(tspan[i], points[i], points[i+1], v0, vf, acc0, accf)
     traj.append(traj_obj.GenerateQuinticTraj())
-    traj_obj.TrajPlot()
+    #traj_obj.TrajPlot()
 # traj0 = QuinticTraj([0,5], [1,0,0], [0,2,1], v0, vf, v0,v0)
 # coeff = traj0.GenerateQuinticTraj()
 # traj0.TrajPlot(coeff)
