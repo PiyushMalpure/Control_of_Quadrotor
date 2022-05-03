@@ -34,8 +34,8 @@ class Quadrotor():
         # TODO: include initialization codes if needed
 
         ten6 = 10**-6
-        self.m, self.l, self.Ix, self.Iy, self.Iz, self.Ip  = 0.027, 0.046, 16.5717*ten6, 16.5717*ten6, 29.2616*ten6, 12.65625*ten6
-        self.kF, self.kM, self.w_max, self.w_min, self.g = 1.26192*10**-8, 5.9645*10**-3, 2618, 0, 9.81
+        self.m, self.l, self.Ix, self.Iy, self.Iz, self.Ip  = 0.027, 0.046, 16.5717*(ten6), 16.5717*(ten6), 29.2616*(ten6), 12.65625*(ten6)
+        self.kF, self.kM, self.w_max, self.w_min, self.g = 1.26192*(10**-8), 5.9645*(10**-3), 2618, 0, 9.81
 
         # setting initial inputs to 0 
         self.u1, self.u2, self.u3, self.u4 = 0.01, 0.01, 0.01, 0.01
@@ -87,7 +87,7 @@ class Quadrotor():
         self.traj_evaluate()
         #print(self.ddx_d, self.dx_d, self.x_d)
         # We have x_d, y_d, z_d we calculate the theta_d and phi_d from the relations given between x,y,z
-        Kp, Kd = 0.01, 0.01 # PD control Kp, Kd
+        Kp, Kd = 1, 1 # PD control Kp, Kd
         # x,y = 1, 1
         # dx, dy = 0, 0
         Fx = self.m * (-Kp * (xyz[0,0] - self.x_d) - Kd * (xyz_dot[0,0]-self.dx_d) + self.ddx_d) 
@@ -121,8 +121,6 @@ class Quadrotor():
         e = np.concatenate((xyz,rpy), axis=0) - q_d
         de = np.concatenate((xyz_dot ,rpy_dot), axis=0) - dq_d
 
-        phi, theta, psy = rpy
-        dphi, dtheta, dpsy = rpy_dot
         # ddx = (self.u1/self.m) * ( cos(phi)*sin(theta)*cos(psy) + sin(phi)*sin(psy) )
         # ddy = (self.u1/self.m) * ( cos(phi)*sin(theta)*cos(psy) - sin(phi)*sin(psy) )
         # ddz = (self.u1/self.m) * ( cos(phi)*cos(theta) ) -self.g
@@ -139,7 +137,7 @@ class Quadrotor():
         # f6 = dphi*dtheta*((self.Ix-self.Iy)/self.Iz)
         # f = np.array([[0], [0], [-self.g], [f4], [f5], [f6]])
         
-        k = np.ones((6,1)) * 0.01
+        k = np.ones((6,1)) * 0.010
         laambda = np.ones((6,1)) * 0.01
         s = de + laambda * e
 
@@ -163,10 +161,11 @@ class Quadrotor():
         print('U values end', self.u1, self.u2, self.u3,self.u4)
         self.w1 = np.sqrt(np.abs(t1*self.u1 - t2 * self.u2 - t2 * self.u3 - t3 * self.u4))
         #w1 = np.sqrt(np.dot(np.array([t1,-t2,-t2,-t3]),(np.array([self.u1,self.u2,self.u3,self.u4]))))
-        self.w2 = np.sqrt(np.abs(np.dot(np.array([t1,-t2, t2, t3]),(np.array([self.u1,self.u2,self.u3,self.u4])))))
+        self.w2 = np.sqrt(np.abs(np.dot(np.array([t1,-t2, -t2, -t3]),(np.array([self.u1,self.u2,self.u3,self.u4])))))
         self.w3 = np.sqrt(np.abs(np.dot(np.array([t1, t2, t2,-t3]),(np.array([self.u1,self.u2,self.u3,self.u4])))))
         self.w4 = np.sqrt(np.abs(np.dot(np.array([t1, t2,-t2, t3]),(np.array([self.u1,self.u2,self.u3,self.u4])))))
-         
+        print(t1, t2, t3) 
+        print(' Ws End',self.w1, self.w2, self.w3, self.w4)
         self.max_val()
         print(' Ws End',self.w1, self.w2, self.w3, self.w4)
 
