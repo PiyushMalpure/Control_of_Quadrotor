@@ -215,7 +215,7 @@ class Quadrotor():
             self.mutex_lock_on = True
             pickle.dump([self.t_series,self.x_series,self.y_series,self.z_series], fp)
 
-    def max_val(self):
+    def wrap_values(self):
         if self.w1 > 2618:
             self.w1 = 2618
         if self.w2 > 2618:
@@ -224,6 +224,15 @@ class Quadrotor():
             self.w3 = 2618
         if self.w4 > 2618:
             self.w4 = 2618
+
+        if self.w1 < 0:
+            self.w1 = 0
+        if self.w2 < 0:
+            self.w2 = 0
+        if self.w3 < 0:
+            self.w3 = 0
+        if self.w4 < 0:
+            self.w4 = 0
 
 
 if __name__ == '__main__':
